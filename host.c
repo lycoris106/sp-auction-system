@@ -57,9 +57,9 @@ void calculate_rank(playerData* pl, int num){
 
 
 int main(int argc, char *argv[]){
-    
+
     if (argc != 4)
-	err_sys("argc error!");
+	err_sys("argc error");
 
     int host_id = atoi(argv[1]);
     int key = atoi(argv[2]);
@@ -90,26 +90,26 @@ int main(int argc, char *argv[]){
 	    close(pipe1_down[0]);
 	    close(pipe1_up[1]);
 
-	    char new_depth[8];	    
+	    char new_depth[8];
 	    sprintf(new_depth, "%d\0", depth+1);
 	    execl("./host", "./host", argv[1], argv[2], new_depth, (char*)0);
 	}
 
 	close(pipe1_down[0]);
 	close(pipe1_up[1]);
-	
+
 	//create child 2
 	if (pipe(pipe2_down) < 0)
 	    err_sys("pipe2_down create error");
 	if (pipe(pipe2_up) < 0)
 	    err_sys("pipe2_up create error");
-	
+
 	if ((pid2 = fork()) < 0)
 	    err_sys("fork2 error");
 	else if (pid2 == 0){
 	    close(pipe2_down[1]);
 	    close(pipe2_up[0]);
-	    
+
 	    dup2(pipe2_down[0], STDIN_FILENO);
 	    dup2(pipe2_up[1], STDOUT_FILENO);
 
@@ -123,7 +123,7 @@ int main(int argc, char *argv[]){
 	    char new_depth[8];
 	    sprintf(new_depth, "%d\0", depth+1);
 	    execl("./host", "./host", argv[1], argv[2], new_depth, (char*)0);
-	    
+
 	}
 
 	close(pipe2_down[0]);
@@ -138,7 +138,7 @@ int main(int argc, char *argv[]){
 #endif
 	char readFIFOname[16];
 	sprintf(readFIFOname, "fifo_%d.tmp\0", host_id);
-	
+
 	FILE *readFIFO = fopen(readFIFOname, "r");
 #ifdef DEBUG
 	fprintf(stderr, "opened readFIFO\n");
@@ -151,11 +151,11 @@ int main(int argc, char *argv[]){
 	    err_sys("write FIFO error");
 	int writefd = fileno(writeFIFO);
 
-	
+
 	int playerID[8];
 
 
-	fscanf(readFIFO, "%d %d %d %d %d %d %d %d", &playerID[0], &playerID[1], &playerID[2], 
+	fscanf(readFIFO, "%d %d %d %d %d %d %d %d", &playerID[0], &playerID[1], &playerID[2],
 		&playerID[3], &playerID[4], &playerID[5], &playerID[6], &playerID[7]);
 #ifdef DEBUG
 	fprintf(stderr, "finish reading playerIDs\n");
@@ -170,7 +170,7 @@ int main(int argc, char *argv[]){
 	if (!(read_pipe1 && write_pipe1 && read_pipe2 && write_pipe2))
 	    err_sys("open pipe error (depth = 0)");
 
-	
+
 	while (playerID[0] != -1){
 	    playerData *players = init_data(playerID, 8);
 
@@ -200,9 +200,9 @@ int main(int argc, char *argv[]){
 		    }
 		}
 	    }
-	    
+
 	    calculate_rank(players, 8);
-	    
+
 	    fprintf(writeFIFO, "%s\n", argv[2]);
 	    for (int i = 0; i < 8; i++){
 		fprintf(writeFIFO, "%d %d\n", players[i].ID, players[i].rank);
@@ -213,7 +213,7 @@ int main(int argc, char *argv[]){
 	    free_data(players, 8);
 
 	    //next competition
-	    fscanf(readFIFO, "%d %d %d %d %d %d %d %d", &playerID[0], &playerID[1], &playerID[2], 
+	    fscanf(readFIFO, "%d %d %d %d %d %d %d %d", &playerID[0], &playerID[1], &playerID[2],
 		&playerID[3], &playerID[4], &playerID[5], &playerID[6], &playerID[7]);
 
 	}
@@ -229,7 +229,7 @@ int main(int argc, char *argv[]){
 	fclose(write_pipe1);
 	fclose(read_pipe1);
 	fclose(write_pipe2);
-	    
+
     }
 
     else if (depth == 1){ // middle host
@@ -240,10 +240,10 @@ int main(int argc, char *argv[]){
 
 	if (!(read_pipe1 && write_pipe1 && read_pipe2 && write_pipe2))
 	    err_sys("open pipe error (depth = 1)");
-	
+
 	int playerID[4];
 	scanf("%d %d %d %d", &playerID[0], &playerID[1], &playerID[2], &playerID[3]);
-	
+
 	while (playerID[0] != -1){
 	    fprintf(write_pipe1, "%d %d\n", playerID[0], playerID[1]);
 	    fprintf(write_pipe2, "%d %d\n", playerID[2], playerID[3]);
@@ -254,7 +254,7 @@ int main(int argc, char *argv[]){
 	    for (int i = 0; i < 10; i++){
 		fscanf(read_pipe1, "%d %d", &ID1, &bid1);
 		fscanf(read_pipe2, "%d %d", &ID2, &bid2);
-	    
+
 
 		if (bid1 > bid2)
 		    printf("%d %d\n", ID1, bid1);
@@ -262,7 +262,7 @@ int main(int argc, char *argv[]){
 		    printf("%d %d\n", ID2, bid2);
 		flush_sync(stdout, STDOUT_FILENO);
 
-		
+
 	    }
 	    //next competition
 	    scanf("%d %d %d %d", &playerID[0], &playerID[1], &playerID[2], &playerID[3]);
@@ -284,7 +284,7 @@ int main(int argc, char *argv[]){
     else{ //leaf host
 	int playerID[2];
 	scanf("%d %d", &playerID[0], &playerID[1]);
-	
+
 	while (playerID[0] != -1){ // player should be forked again after 10 rounds
 	    //create pipe
 	    //create child 1
@@ -306,7 +306,7 @@ int main(int argc, char *argv[]){
 		close(pipe1_down[0]);
 		close(pipe1_up[1]);
 
-		char ID_str[8];	    
+		char ID_str[8];
 		sprintf(ID_str, "%d\0", playerID[0]);
 		execl("./player", "./player", ID_str, (char*)0);
 	    }
@@ -326,13 +326,13 @@ int main(int argc, char *argv[]){
 	    else if (pid2 == 0){
 		close(pipe2_down[1]);
 		close(pipe2_up[0]);
-		
+
 		dup2(pipe2_down[0], STDIN_FILENO);
 		dup2(pipe2_up[1], STDOUT_FILENO);
 
 		close(pipe2_down[0]);
 		close(pipe2_up[1]);
-		
+
 		//close pipe1
 		close(pipe1_down[1]);
 		close(pipe1_up[0]);
