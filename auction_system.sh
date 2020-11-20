@@ -47,37 +47,6 @@ function find_combination {
 
 }
 
-function calcuRank {
-    for i in $(seq 1 $N);
-    do
-        rank[$i]=0
-    done
-    local count=0
-    local cur_rank=1
-    while [ $count -lt $N ]
-    do
-        max=-1
-        for i in $(seq 1 $N);
-        do
-            if [ ${rank[$i]} == 0 ] && [ ${score[$i]} -gt $max ]
-            then
-                max=${score[$i]}
-            fi
-        done
-        for i in $(seq 1 $N);
-        do
-            if [ ${score[$i]} == $max ]
-            then
-                rank[$i]=$cur_rank
-                count=$((count+1))
-            fi
-        done
-        cur_rank=$((cur_rank+1))
-    done
-    return
-}
-
-
 
 if [ ! -p $fifo0 ]
 then
@@ -169,7 +138,6 @@ do
     fi
 done
 
-calcuRank
 
 for i in $(seq 1 $N);
 do
