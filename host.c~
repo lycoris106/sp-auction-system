@@ -210,7 +210,7 @@ int main(int argc, char *argv[]){
 	    flush_sync(writeFIFO, writefd);
 
 
-	    free_data(players, 8);
+	    //free_data(players, 8);
 
 	    //next competition
 	    fscanf(readFIFO, "%d %d %d %d %d %d %d %d", &playerID[0], &playerID[1], &playerID[2],
@@ -227,7 +227,7 @@ int main(int argc, char *argv[]){
 	wait(NULL);
 	fclose(read_pipe1);
 	fclose(write_pipe1);
-	fclose(read_pipe2);
+	fclose(read_pipe1);
 	fclose(write_pipe2);
 
     }
